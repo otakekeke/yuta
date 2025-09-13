@@ -38,6 +38,9 @@
         /* Reduce button intrinsic min width so 7 columns fit on phones */
         .calendar-grid .MuiButton-root { min-width: 0; padding-left: 0; padding-right: 0; font-size: 0.875rem; }
         .calendar-weekdays { font-size: 12px; }
+        /* Keep header buttons on one line; allow horizontal scroll */
+        .header-actions { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .header-actions .MuiButton-root { min-width: auto; padding-left: 8px; padding-right: 8px; }
         /* Shorter anchor offset under sticky AppBar on phones */
         .section { scroll-margin-top: 72px; }
       }
@@ -72,7 +75,7 @@
             <Toolbar sx={{ gap: 2 }}>
               <Motorcycle color="primary" />
               <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 800 }}>車検代行のゆうた</Typography>
-              <Stack direction={{ xs: 'column', sm: 'row' }} gap={1} alignItems="center">
+              <Stack className="header-actions" direction="row" gap={1} alignItems="center" sx={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
                 <Button href="#estimate" color="primary" size="small">見積もり</Button>
                 <Button href="#booking" color="primary" size="small">予約</Button>
                 <Button href="#contact" color="primary" size="small">問い合わせ</Button>
