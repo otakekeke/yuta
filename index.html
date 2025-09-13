@@ -31,6 +31,16 @@
       .calendar-weekdays { font-weight: 600; opacity: 0.8; }
       .sr-only { position: absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip: rect(0,0,0,0); border:0; }
       .section { scroll-margin-top: 96px; }
+
+      /* Mobile adjustments */
+      @media (max-width: 600px) {
+        .calendar-grid { gap: 4px; }
+        /* Reduce button intrinsic min width so 7 columns fit on phones */
+        .calendar-grid .MuiButton-root { min-width: 0; padding-left: 0; padding-right: 0; font-size: 0.875rem; }
+        .calendar-weekdays { font-size: 12px; }
+        /* Shorter anchor offset under sticky AppBar on phones */
+        .section { scroll-margin-top: 72px; }
+      }
     </style>
   </head>
   <body>
@@ -46,11 +56,15 @@
       const currency = (n) => n.toLocaleString('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 });
       const formatDateKey = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 
-      const theme = createTheme({
+      // Use responsive font sizes for better readability on mobile
+      let theme = createTheme({
         palette: { primary: { main: '#f97316' }, secondary: { main: '#0ea5e9' } },
         shape: { borderRadius: 12 },
         typography: { fontFamily: 'Noto Sans JP, system-ui, -apple-system, Segoe UI, Roboto, sans-serif', h3: { fontWeight: 700 }, h4: { fontWeight: 700 }, button: { fontWeight: 700 } }
       });
+      if (MaterialUI && typeof MaterialUI.responsiveFontSizes === 'function') {
+        theme = MaterialUI.responsiveFontSizes(theme);
+      }
 
       function Header() {
         return (
@@ -647,7 +661,7 @@
                             color={isSelected ? 'primary' : 'inherit'}
                             disabled={disabled}
                             onClick={() => setSelected(d)}
-                            sx={{ height: 48 }}
+                            sx={{ height: { xs: 40, sm: 48 } }}
                           >
                             {d.getDate()}
                           </Button>
