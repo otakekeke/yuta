@@ -39,7 +39,7 @@
   <body>
     <div id="root"></div>
 
-    <script type="text/babel">
+    <script type="text/babel" data-presets="env,react">
       const {
         createElement: h,
         useState,
@@ -82,7 +82,17 @@
         Tooltip
       } = MaterialUI;
 
-      const { Motorcycle, Calculate, CalendarMonth, Send, LocalShipping, BuildCircle, PriceCheck } = MaterialUIIcons;
+      // Icons (fallback to empty spans if UMD not found)
+      const Icons = (typeof MaterialUIIcons !== 'undefined') ? MaterialUIIcons : (MaterialUI && MaterialUI.Icons) ? MaterialUI.Icons : {};
+      const {
+        Motorcycle = () => React.createElement('span'),
+        Calculate = () => React.createElement('span'),
+        CalendarMonth = () => React.createElement('span'),
+        Send = () => React.createElement('span'),
+        LocalShipping = () => React.createElement('span'),
+        BuildCircle = () => React.createElement('span'),
+        PriceCheck = () => React.createElement('span'),
+      } = Icons;
 
       // Utilities
       const currency = (n) => n.toLocaleString('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 });
@@ -545,4 +555,3 @@
     </script>
   </body>
   </html>
-
