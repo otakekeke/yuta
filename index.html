@@ -31,6 +31,8 @@
       .calendar-weekdays { font-weight: 600; opacity: 0.8; }
       .sr-only { position: absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip: rect(0,0,0,0); border:0; }
       .section { scroll-margin-top: 96px; }
+      /* Remove duplicate plain estimate button in header */
+      .header-actions > .MuiButton-root:first-child { display: none; }
 
       /* Mobile adjustments */
       @media (max-width: 600px) {
@@ -40,7 +42,12 @@
         .calendar-weekdays { font-size: 12px; }
         /* Keep header buttons on one line; allow horizontal scroll */
         .header-actions { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .header-actions .MuiButton-root { min-width: auto; padding-left: 8px; padding-right: 8px; }
+        .header-actions .MuiButton-root {
+          min-width: auto;
+          padding-left: 8px; padding-right: 8px;
+          padding-top: 4px; padding-bottom: 4px;
+          white-space: nowrap; line-height: 1.2;
+        }
         /* Shorter anchor offset under sticky AppBar on phones */
         .section { scroll-margin-top: 72px; }
       }
@@ -75,7 +82,7 @@
             <Toolbar sx={{ gap: 2 }}>
               <Motorcycle color="primary" />
               <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 800 }}>車検代行のゆうた</Typography>
-              <Stack className="header-actions" direction="row" gap={1} alignItems="center" sx={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
+              <Stack className="header-actions" direction="row" gap={{ xs: 0.5, sm: 1 }} alignItems="center" sx={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
                 <Button href="#estimate" color="primary" size="small">見積もり</Button>
                 <Button href="#booking" color="primary" size="small">予約</Button>
                 <Button href="#contact" color="primary" size="small">問い合わせ</Button>
