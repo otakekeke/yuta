@@ -51,6 +51,10 @@
         /* Shorter anchor offset under sticky AppBar on phones */
         .section { scroll-margin-top: 72px; }
       }
+
+      /* Header title wrap control */
+      .site-title { word-break: keep-all; white-space: normal; }
+      .app-toolbar .MuiTypography-root:nth-of-type(2) { display: none; }
     </style>
   </head>
   <body>
@@ -79,8 +83,11 @@
       function Header() {
         return (
           <AppBar position="sticky" color="inherit" elevation={0} sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
-            <Toolbar sx={{ gap: 2 }}>
+            <Toolbar className="app-toolbar" sx={{ gap: 2 }}>
               <Motorcycle color="primary" />
+              <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 800 }}>
+                <span className="site-title">車検代行の<wbr/>ゆうた</span>
+              </Typography>
               <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 800 }}>車検代行のゆうた</Typography>
               <Stack className="header-actions" direction="row" gap={{ xs: 0.5, sm: 1 }} alignItems="center" sx={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
                 <Button href="#estimate" color="primary" size="small">見積もり</Button>
