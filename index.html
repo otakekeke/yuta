@@ -4,21 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>車検代行のゆうた | バイク専門の車検代行</title>
-    <meta name="description" content="バイク専門の車検代行サービス。自動見積もり・空き日程カレンダー予約・問い合わせフォーム完備。迅速・丁寧・明朗会計の車検代行なら『車検代行のゆうた』へ。" />
+    <meta name="description" content="バイク専門の車検代行サービス。自動見積もり・空き日程カレンダー予約・問い合わせフォーム完備。総額の目安がすぐ分かる『車検代行のゆうた』。" />
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet" />
 
-    <!-- Material UI + Icons + Emotion (UMD) -->
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@emotion/react@11.11.4/dist/emotion-react.umd.min.js" crossorigin></script>
     <script src="https://unpkg.com/@emotion/styled@11.11.5/dist/emotion-styled.umd.min.js" crossorigin></script>
     <script src="https://unpkg.com/@mui/material@5.15.15/umd/material-ui.development.js" crossorigin></script>
     <script src="https://unpkg.com/@mui/icons-material@5.15.15/umd/material-ui-icons.development.js" crossorigin></script>
-    <!-- Babel for inline JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
@@ -40,86 +37,21 @@
     <div id="root"></div>
 
     <script type="text/babel" data-presets="env,react">
-      const {
-        createElement: h,
-        useState,
-        useMemo,
-        useEffect,
-        Fragment
-      } = React;
+      const { useState, useMemo } = React;
+      const { ThemeProvider, createTheme, CssBaseline, AppBar, Toolbar, Box, Container, Typography, Button, Stack, Paper, Grid, Divider, Chip, Link, FormControl, InputLabel, Select, MenuItem, FormGroup, FormControlLabel, Switch, TextField, Snackbar, Alert, Card, CardContent, Tooltip } = MaterialUI;
 
-      const {
-        ThemeProvider,
-        createTheme,
-        CssBaseline,
-        AppBar,
-        Toolbar,
-        Box,
-        Container,
-        Typography,
-        Button,
-        IconButton,
-        Stack,
-        Paper,
-        Grid,
-        Divider,
-        Chip,
-        Link,
-        FormControl,
-        InputLabel,
-        Select,
-        MenuItem,
-        FormGroup,
-        FormControlLabel,
-        Checkbox,
-        Switch,
-        TextField,
-        Snackbar,
-        Alert,
-        Card,
-        CardContent,
-        CardActions,
-        Tooltip
-      } = MaterialUI;
-
-      // Icons (fallback to empty spans if UMD not found)
       const Icons = (typeof MaterialUIIcons !== 'undefined') ? MaterialUIIcons : (MaterialUI && MaterialUI.Icons) ? MaterialUI.Icons : {};
-      const {
-        Motorcycle = () => React.createElement('span'),
-        Calculate = () => React.createElement('span'),
-        CalendarMonth = () => React.createElement('span'),
-        Send = () => React.createElement('span'),
-        LocalShipping = () => React.createElement('span'),
-        BuildCircle = () => React.createElement('span'),
-        PriceCheck = () => React.createElement('span'),
-      } = Icons;
+      const { Motorcycle = () => React.createElement('span'), Calculate = () => React.createElement('span'), CalendarMonth = () => React.createElement('span'), Send = () => React.createElement('span'), LocalShipping = () => React.createElement('span'), BuildCircle = () => React.createElement('span'), PriceCheck = () => React.createElement('span') } = Icons;
 
-      // Utilities
       const currency = (n) => n.toLocaleString('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 });
-      const formatDateKey = (d) => {
-        const y = d.getFullYear();
-        const m = String(d.getMonth()+1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${y}-${m}-${day}`;
-      };
+      const formatDateKey = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 
-      // Theme
       const theme = createTheme({
-        palette: {
-          primary: { main: '#f97316' }, // orange-500
-          secondary: { main: '#0ea5e9' }, // sky-500
-        },
+        palette: { primary: { main: '#f97316' }, secondary: { main: '#0ea5e9' } },
         shape: { borderRadius: 12 },
-        typography: {
-          fontFamily: 'Noto Sans JP, system-ui, -apple-system, Segoe UI, Roboto, sans-serif',
-          h1: { fontWeight: 700 },
-          h2: { fontWeight: 700 },
-          h3: { fontWeight: 700 },
-          button: { fontWeight: 700 },
-        },
+        typography: { fontFamily: 'Noto Sans JP, system-ui, -apple-system, Segoe UI, Roboto, sans-serif', h3: { fontWeight: 700 }, h4: { fontWeight: 700 }, button: { fontWeight: 700 } }
       });
 
-      // Header / Navbar
       function Header() {
         return (
           <AppBar position="sticky" color="inherit" elevation={0} sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
@@ -137,19 +69,18 @@
         );
       }
 
-      // Hero section
       function Hero() {
         return (
           <Box className="hero" sx={{ py: { xs: 8, md: 12 }, borderBottom: '1px solid', borderColor: 'divider' }}>
             <Container maxWidth="lg">
               <Grid container spacing={4} alignItems="center">
                 <Grid item xs={12} md={7}>
-                  <Typography variant="overline" color="primary" sx={{ letterSpacing: 2 }}>バイク専門・迅速対応</Typography>
+                  <Typography variant="overline" color="primary" sx={{ letterSpacing: 2 }}>バイク専門・最短日程で対応</Typography>
                   <Typography variant="h3" sx={{ mt: 1, lineHeight: 1.2 }}>
-                    面倒な手続きはお任せ。<br />明朗会計のバイク車検代行
+                    総額の目安が1分で分かる。<br/>カレンダー予約できる車検代行
                   </Typography>
                   <Typography color="text.secondary" sx={{ mt: 2 }}>
-                    自動見積もり、空き日程の可視化、Web予約、問い合わせまでワンストップ。<br/>
+                    自動見積もりで総額の目安を可視化。空き日程はカレンダーからそのまま予約。<br/>
                     代表：近藤友汰（屋号：車検代行のゆうた）
                   </Typography>
                   <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} sx={{ mt: 3 }}>
@@ -159,7 +90,7 @@
                   <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} sx={{ mt: 3 }}>
                     <Stack direction="row" gap={1} alignItems="center">
                       <PriceCheck color="primary" />
-                      <Typography variant="body2">明朗会計</Typography>
+                      <Typography variant="body2">総額目安をその場で表示</Typography>
                     </Stack>
                     <Stack direction="row" gap={1} alignItems="center">
                       <LocalShipping color="primary" />
@@ -175,9 +106,9 @@
                   <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', backdropFilter: 'blur(6px)' }}>
                     <Typography variant="subtitle2" gutterBottom>こんな方におすすめ</Typography>
                     <Stack gap={1}>
-                      <Typography variant="body2">・初めての車検で不安</Typography>
+                      <Typography variant="body2">・総額の目安を先に知りたい</Typography>
                       <Typography variant="body2">・平日に陸運局へ行けない</Typography>
-                      <Typography variant="body2">・費用を先に把握したい</Typography>
+                      <Typography variant="body2">・空き日程をその場で押さえたい</Typography>
                     </Stack>
                     <Button href="#estimate" fullWidth sx={{ mt: 2 }} variant="contained">すぐに概算を出す</Button>
                   </Paper>
@@ -188,51 +119,60 @@
         );
       }
 
-      // Estimate (Auto Quote)
       function Estimate() {
+        const [vehicleClass, setVehicleClass] = useState('小型二輪（251cc以上）');
         const [cc, setCc] = useState('401+');
         const [pickup, setPickup] = useState(false);
         const [preService, setPreService] = useState(true);
         const [loaner, setLoaner] = useState(false);
+        const [includeStatutory, setIncludeStatutory] = useState(true);
 
-        const priceTable = {
-          '〜125cc': 8000,
-          '126〜250cc': 12000,
-          '251〜400cc': 18000,
-          '401+': 22000,
-        };
-        const agentFee = 12000;
+        const priceTable = { '251〜400cc': 18000, '401+': 22000 };
+        const agentFee = 15000;
         const pickupFee = 5000;
         const servicePack = 15000;
-        const loanerFee = 0; // キャンペーン中: 無料（例）
+        const loanerFee = 0;
 
-        const total = useMemo(() => {
-          let t = agentFee + priceTable[cc];
+        const statutory = { jibaiseki24m: 9000, weightTax2y: 3800, inspectionFee: 1800 };
+
+        const workTotal = useMemo(() => {
+          let t = agentFee + (priceTable[cc] || 0);
           if (pickup) t += pickupFee;
           if (preService) t += servicePack;
           if (loaner) t += loanerFee;
           return t;
         }, [cc, pickup, preService, loaner]);
 
+        const statutoryTotal = statutory.jibaiseki24m + statutory.weightTax2y + statutory.inspectionFee;
+        const grandTotal = includeStatutory ? workTotal + statutoryTotal : workTotal;
+
         return (
           <Box id="estimate" className="section" sx={{ py: { xs: 8, md: 10 } }}>
             <Container maxWidth="lg">
               <Stack gap={1} sx={{ mb: 3 }}>
                 <Typography variant="overline" color="primary">自動見積もり</Typography>
-                <Typography variant="h4">概算見積もりをその場で算出</Typography>
-                <Typography color="text.secondary">表示価格は概算です。状態・追加整備・法定費用等により変動します。</Typography>
+                <Typography variant="h4">総額の目安をその場で算出</Typography>
+                <Typography color="text.secondary">251cc以上（小型二輪）が車検対象です。126〜250cc、〜125ccは車検不要（点検整備のご相談は可能）です。表示は概算で、状態・追加整備・法定費用の改定等により変動します。</Typography>
               </Stack>
 
               <Grid container spacing={3}>
                 <Grid item xs={12} md={7}>
                   <Paper variant="outlined" sx={{ p: 3 }}>
                     <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
+                      <Grid item xs={12}>
                         <FormControl fullWidth>
-                          <InputLabel id="cc-label">排気量クラス</InputLabel>
-                          <Select labelId="cc-label" label="排気量クラス" value={cc} onChange={(e) => setCc(e.target.value)}>
-                            <MenuItem value={'〜125cc'}>〜125cc（参考）</MenuItem>
-                            <MenuItem value={'126〜250cc'}>126〜250cc（参考）</MenuItem>
+                          <InputLabel id="class-label">車両区分</InputLabel>
+                          <Select labelId="class-label" label="車両区分" value={vehicleClass} onChange={(e)=>{ const v=e.target.value; setVehicleClass(v); if(v!=='小型二輪（251cc以上）') setCc('401+'); }}>
+                            <MenuItem value={'小型二輪（251cc以上）'}>小型二輪（251cc以上）</MenuItem>
+                            <MenuItem value={'軽二輪（126〜250cc）'}>軽二輪（126〜250cc）※車検不要</MenuItem>
+                            <MenuItem value={'原付（〜125cc）'}>原付（〜125cc）※車検不要</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth disabled={vehicleClass!=='小型二輪（251cc以上）'}>
+                          <InputLabel id="cc-label">排気量（目安）</InputLabel>
+                          <Select labelId="cc-label" label="排気量（目安）" value={cc} onChange={(e)=>setCc(e.target.value)}>
                             <MenuItem value={'251〜400cc'}>251〜400cc</MenuItem>
                             <MenuItem value={'401+'}>401cc以上</MenuItem>
                           </Select>
@@ -243,25 +183,43 @@
                           <FormControlLabel control={<Switch checked={pickup} onChange={(e)=>setPickup(e.target.checked)} />} label={`引取・納車（${currency(pickupFee)}）`} />
                           <FormControlLabel control={<Switch checked={preService} onChange={(e)=>setPreService(e.target.checked)} />} label={`車検前整備パック（${currency(servicePack)}）`} />
                           <FormControlLabel control={<Switch checked={loaner} onChange={(e)=>setLoaner(e.target.checked)} />} label={`代車オプション（${currency(loanerFee)}）`} />
+                          <FormControlLabel control={<Switch checked={includeStatutory} onChange={(e)=>setIncludeStatutory(e.target.checked)} />} label={`法定費用（概算）も含めて表示`} />
                         </FormGroup>
                       </Grid>
                     </Grid>
                     <Divider sx={{ my: 2 }} />
-                    <Stack direction="row" justifyContent="space-between" alignItems="center">
-                      <Typography color="text.secondary">基本料金</Typography>
-                      <Typography>{currency(priceTable[cc])}</Typography>
-                    </Stack>
-                    <Stack direction="row" justifyContent="space-between" alignItems="center">
-                      <Typography color="text.secondary">代行手数料</Typography>
-                      <Typography>{currency(agentFee)}</Typography>
-                    </Stack>
-                    <Stack direction="row" justifyContent="space-between" alignItems="center">
-                      <Typography variant="h6">概算合計</Typography>
-                      <Typography variant="h5" color="primary" sx={{ fontWeight: 800 }}>{currency(total)}</Typography>
-                    </Stack>
+
+                    {vehicleClass==='小型二輪（251cc以上）' ? (
+                      <>
+                        <Stack direction="row" justifyContent="space-between"><Typography color="text.secondary">基本料金（排気量目安）</Typography><Typography>{currency(priceTable[cc])}</Typography></Stack>
+                        <Stack direction="row" justifyContent="space-between"><Typography color="text.secondary">代行手数料</Typography><Typography>{currency(agentFee)}</Typography></Stack>
+                        <Stack direction="row" justifyContent="space-between"><Typography color="text.secondary">作業費用小計</Typography><Typography>{currency(workTotal)}</Typography></Stack>
+                        {includeStatutory && (
+                          <>
+                            <Divider sx={{ my: 1 }} />
+                            <Typography variant="subtitle2" sx={{ mb: 1 }}>法定費用（概算・参考）</Typography>
+                            <Stack direction="row" justifyContent="space-between"><Typography color="text.secondary">自賠責（24ヶ月）</Typography><Typography>{currency(statutory.jibaiseki24m)}</Typography></Stack>
+                            <Stack direction="row" justifyContent="space-between"><Typography color="text.secondary">重量税（2年）</Typography><Typography>{currency(statutory.weightTax2y)}</Typography></Stack>
+                            <Stack direction="row" justifyContent="space-between"><Typography color="text.secondary">検査手数料</Typography><Typography>{currency(statutory.inspectionFee)}</Typography></Stack>
+                          </>
+                        )}
+                        <Divider sx={{ my: 2 }} />
+                        <Stack direction="row" justifyContent="space-between" alignItems="center">
+                          <Typography variant="h6">概算合計（{includeStatutory? '法定費用込み目安':'作業費用のみ'}）</Typography>
+                          <Typography variant="h5" color="primary" sx={{ fontWeight: 800 }}>{currency(grandTotal)}</Typography>
+                        </Stack>
+                      </>
+                    ) : (
+                      <Typography color="text.secondary">選択された区分は車検不要です。点検整備・名義変更等のご相談は問い合わせから承ります。</Typography>
+                    )}
+
                     <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} sx={{ mt: 2 }}>
-                      <Button href="#booking" variant="contained" startIcon={<CalendarMonth />}>この内容で予約に進む</Button>
-                      <Tooltip title="実費（法定費用等）は別途。詳細はお問い合わせください。">
+                      {vehicleClass==='小型二輪（251cc以上）' ? (
+                        <Button href="#booking" variant="contained" startIcon={<CalendarMonth />}>この内容で予約に進む</Button>
+                      ) : (
+                        <Button href="#contact" variant="contained" startIcon={<Send />}>点検整備を相談する</Button>
+                      )}
+                      <Tooltip title="法定費用は改定により変動します。詳細はお問い合わせください。">
                         <Button href="#contact" variant="text" startIcon={<Send />}>詳細見積もりを依頼</Button>
                       </Tooltip>
                     </Stack>
@@ -271,17 +229,17 @@
                   <Stack gap={2}>
                     <Card variant="outlined">
                       <CardContent>
-                        <Typography variant="subtitle2" gutterBottom>料金の考え方</Typography>
+                        <Typography variant="subtitle2" gutterBottom>相場感（参考）</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          代行手数料＋基本料金（排気量別）＋オプションで概算表示します。実際の総額は法定費用、追加整備の有無、パーツ代などで変動します。
+                          代行手数料は1.5〜3.0万円程度、車検前整備パックは1.0〜2.0万円程度が一般的です。総額は法定費用（自賠責・重量税・検査手数料）と追加整備の有無で変動します。
                         </Typography>
                       </CardContent>
                     </Card>
                     <Card variant="outlined">
                       <CardContent>
-                        <Typography variant="subtitle2" gutterBottom>小型（〜250cc）について</Typography>
+                        <Typography variant="subtitle2" gutterBottom>〜250cc（原付・軽二輪）について</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          〜250ccの車両は車検対象外です。名義変更や点検整備のご相談はお問い合わせください。
+                          〜250ccの車両は車検対象外です（法定点検や整備、名義変更のご相談は可能です）。
                         </Typography>
                       </CardContent>
                     </Card>
@@ -293,7 +251,6 @@
         );
       }
 
-      // Simple Calendar (no MUI X dependency)
       function Booking() {
         const [name, setName] = useState('');
         const [email, setEmail] = useState('');
@@ -529,7 +486,7 @@
                 </Grid>
               </Grid>
               <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
-                表示価格は概算です。実費（法定費用・追加整備・部品代等）は別途発生します。詳しくはお問い合わせください。
+                表示価格は概算です。法定費用の改定・追加整備・部品代等により変動します。詳しくはお問い合わせください。
               </Typography>
             </Container>
           </Box>
