@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>車検代行のゆうた | バイク専門の車検代行</title>
+    <meta name="description" content="バイク専門の車検代行サービス。自動見積もり・空き日程カレンダー予約・問い合わせフォーム完備。迅速・丁寧・明朗会計の車検代行なら『車検代行のゆうた』へ。" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Material UI + Icons + Emotion (UMD) -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@emotion/react@11.11.4/dist/emotion-react.umd.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@emotion/styled@11.11.5/dist/emotion-styled.umd.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@mui/material@5.15.15/umd/material-ui.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@mui/icons-material@5.15.15/umd/material-ui-icons.development.js" crossorigin></script>
+    <!-- Babel for inline JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      :root { color-scheme: light; }
+      html, body { height: 100%; }
+      body { margin: 0; font-family: 'Noto Sans JP', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+      a { text-decoration: none; }
+      .hero {
+        background: radial-gradient(1200px 600px at 10% 0%, #fff4e6 0%, rgba(255,255,255,0) 60%),
+                    linear-gradient(135deg, #ffedd5 0%, #e0f2fe 100%);
+      }
+      .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+      .calendar-weekdays { font-weight: 600; opacity: 0.8; }
+      .sr-only { position: absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip: rect(0,0,0,0); border:0; }
+      .section { scroll-margin-top: 96px; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const {
+        createElement: h,
+        useState,
+        useMemo,
+        useEffect,
+        Fragment
+      } = React;
+
+      const {
+        ThemeProvider,
+        createTheme,
+        CssBaseline,
+        AppBar,
+        Toolbar,
+        Box,
+        Container,
+        Typography,
+        Button,
+        IconButton,
+        Stack,
+        Paper,
+        Grid,
+        Divider,
+        Chip,
+        Link,
+        FormControl,
+        InputLabel,
+        Select,
+        MenuItem,
+        FormGroup,
+        FormControlLabel,
+        Checkbox,
+        Switch,
+        TextField,
+        Snackbar,
+        Alert,
+        Card,
+        CardContent,
+        CardActions,
+        Tooltip
+      } = MaterialUI;
+
+      const { Motorcycle, Calculate, CalendarMonth, Send, LocalShipping, BuildCircle, PriceCheck } = MaterialUIIcons;
+
+      // Utilities
+      const currency = (n) => n.toLocaleString('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 });
+      const formatDateKey = (d) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      };
+
+      // Theme
+      const theme = createTheme({
+        palette: {
+          primary: { main: '#f97316' }, // orange-500
+          secondary: { main: '#0ea5e9' }, // sky-500
+        },
+        shape: { borderRadius: 12 },
+        typography: {
+          fontFamily: 'Noto Sans JP, system-ui, -apple-system, Segoe UI, Roboto, sans-serif',
+          h1: { fontWeight: 700 },
+          h2: { fontWeight: 700 },
+          h3: { fontWeight: 700 },
+          button: { fontWeight: 700 },
+        },
+      });
+
+      // Header / Navbar
+      function Header() {
+        return (
+          <AppBar position="sticky" color="inherit" elevation={0} sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
+            <Toolbar sx={{ gap: 2 }}>
+              <Motorcycle color="primary" />
+              <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 800 }}>車検代行のゆうた</Typography>
+              <Stack direction={{ xs: 'column', sm: 'row' }} gap={1} alignItems="center">
+                <Button href="#estimate" color="primary" size="small">見積もり</Button>
+                <Button href="#booking" color="primary" size="small">予約</Button>
+                <Button href="#contact" color="primary" size="small">問い合わせ</Button>
+                <Button href="#estimate" variant="contained" size="small">無料で見積もり</Button>
+              </Stack>
+            </Toolbar>
+          </AppBar>
+        );
+      }
+
+      // Hero section
+      function Hero() {
+        return (
+          <Box className="hero" sx={{ py: { xs: 8, md: 12 }, borderBottom: '1px solid', borderColor: 'divider' }}>
+            <Container maxWidth="lg">
+              <Grid container spacing={4} alignItems="center">
+                <Grid item xs={12} md={7}>
+                  <Typography variant="overline" color="primary" sx={{ letterSpacing: 2 }}>バイク専門・迅速対応</Typography>
+                  <Typography variant="h3" sx={{ mt: 1, lineHeight: 1.2 }}>
+                    面倒な手続きはお任せ。<br />明朗会計のバイク車検代行
+                  </Typography>
+                  <Typography color="text.secondary" sx={{ mt: 2 }}>
+                    自動見積もり、空き日程の可視化、Web予約、問い合わせまでワンストップ。<br/>
+                    代表：近藤友汰（屋号：車検代行のゆうた）
+                  </Typography>
+                  <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} sx={{ mt: 3 }}>
+                    <Button href="#estimate" variant="contained" startIcon={<Calculate />}>無料で見積もり</Button>
+                    <Button href="#booking" variant="outlined" startIcon={<CalendarMonth />}>空き日程を確認する</Button>
+                  </Stack>
+                  <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} sx={{ mt: 3 }}>
+                    <Stack direction="row" gap={1} alignItems="center">
+                      <PriceCheck color="primary" />
+                      <Typography variant="body2">明朗会計</Typography>
+                    </Stack>
+                    <Stack direction="row" gap={1} alignItems="center">
+                      <LocalShipping color="primary" />
+                      <Typography variant="body2">引取・納車対応</Typography>
+                    </Stack>
+                    <Stack direction="row" gap={1} alignItems="center">
+                      <BuildCircle color="primary" />
+                      <Typography variant="body2">整備も相談可</Typography>
+                    </Stack>
+                  </Stack>
+                </Grid>
+                <Grid item xs={12} md={5}>
+                  <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', backdropFilter: 'blur(6px)' }}>
+                    <Typography variant="subtitle2" gutterBottom>こんな方におすすめ</Typography>
+                    <Stack gap={1}>
+                      <Typography variant="body2">・初めての車検で不安</Typography>
+                      <Typography variant="body2">・平日に陸運局へ行けない</Typography>
+                      <Typography variant="body2">・費用を先に把握したい</Typography>
+                    </Stack>
+                    <Button href="#estimate" fullWidth sx={{ mt: 2 }} variant="contained">すぐに概算を出す</Button>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </Container>
+          </Box>
+        );
+      }
+
+      // Estimate (Auto Quote)
+      function Estimate() {
+        const [cc, setCc] = useState('401+');
+        const [pickup, setPickup] = useState(false);
+        const [preService, setPreService] = useState(true);
+        const [loaner, setLoaner] = useState(false);
+
+        const priceTable = {
+          '〜125cc': 8000,
+          '126〜250cc': 12000,
+          '251〜400cc': 18000,
+          '401+': 22000,
+        };
+        const agentFee = 12000;
+        const pickupFee = 5000;
+        const servicePack = 15000;
+        const loanerFee = 0; // キャンペーン中: 無料（例）
+
+        const total = useMemo(() => {
+          let t = agentFee + priceTable[cc];
+          if (pickup) t += pickupFee;
+          if (preService) t += servicePack;
+          if (loaner) t += loanerFee;
+          return t;
+        }, [cc, pickup, preService, loaner]);
+
+        return (
+          <Box id="estimate" className="section" sx={{ py: { xs: 8, md: 10 } }}>
+            <Container maxWidth="lg">
+              <Stack gap={1} sx={{ mb: 3 }}>
+                <Typography variant="overline" color="primary">自動見積もり</Typography>
+                <Typography variant="h4">概算見積もりをその場で算出</Typography>
+                <Typography color="text.secondary">表示価格は概算です。状態・追加整備・法定費用等により変動します。</Typography>
+              </Stack>
+
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={7}>
+                  <Paper variant="outlined" sx={{ p: 3 }}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <InputLabel id="cc-label">排気量クラス</InputLabel>
+                          <Select labelId="cc-label" label="排気量クラス" value={cc} onChange={(e) => setCc(e.target.value)}>
+                            <MenuItem value={'〜125cc'}>〜125cc（参考）</MenuItem>
+                            <MenuItem value={'126〜250cc'}>126〜250cc（参考）</MenuItem>
+                            <MenuItem value={'251〜400cc'}>251〜400cc</MenuItem>
+                            <MenuItem value={'401+'}>401cc以上</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <FormGroup>
+                          <FormControlLabel control={<Switch checked={pickup} onChange={(e)=>setPickup(e.target.checked)} />} label={`引取・納車（${currency(pickupFee)}）`} />
+                          <FormControlLabel control={<Switch checked={preService} onChange={(e)=>setPreService(e.target.checked)} />} label={`車検前整備パック（${currency(servicePack)}）`} />
+                          <FormControlLabel control={<Switch checked={loaner} onChange={(e)=>setLoaner(e.target.checked)} />} label={`代車オプション（${currency(loanerFee)}）`} />
+                        </FormGroup>
+                      </Grid>
+                    </Grid>
+                    <Divider sx={{ my: 2 }} />
+                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+                      <Typography color="text.secondary">基本料金</Typography>
+                      <Typography>{currency(priceTable[cc])}</Typography>
+                    </Stack>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+                      <Typography color="text.secondary">代行手数料</Typography>
+                      <Typography>{currency(agentFee)}</Typography>
+                    </Stack>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+                      <Typography variant="h6">概算合計</Typography>
+                      <Typography variant="h5" color="primary" sx={{ fontWeight: 800 }}>{currency(total)}</Typography>
+                    </Stack>
+                    <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} sx={{ mt: 2 }}>
+                      <Button href="#booking" variant="contained" startIcon={<CalendarMonth />}>この内容で予約に進む</Button>
+                      <Tooltip title="実費（法定費用等）は別途。詳細はお問い合わせください。">
+                        <Button href="#contact" variant="text" startIcon={<Send />}>詳細見積もりを依頼</Button>
+                      </Tooltip>
+                    </Stack>
+                  </Paper>
+                </Grid>
+                <Grid item xs={12} md={5}>
+                  <Stack gap={2}>
+                    <Card variant="outlined">
+                      <CardContent>
+                        <Typography variant="subtitle2" gutterBottom>料金の考え方</Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          代行手数料＋基本料金（排気量別）＋オプションで概算表示します。実際の総額は法定費用、追加整備の有無、パーツ代などで変動します。
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                    <Card variant="outlined">
+                      <CardContent>
+                        <Typography variant="subtitle2" gutterBottom>小型（〜250cc）について</Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          〜250ccの車両は車検対象外です。名義変更や点検整備のご相談はお問い合わせください。
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Stack>
+                </Grid>
+              </Grid>
+            </Container>
+          </Box>
+        );
+      }
+
+      // Simple Calendar (no MUI X dependency)
+      function Booking() {
+        const [name, setName] = useState('');
+        const [email, setEmail] = useState('');
+        const [phone, setPhone] = useState('');
+        const [note, setNote] = useState('');
+        const [slot, setSlot] = useState('10:00');
+        const [selected, setSelected] = useState(null); // Date
+        const [month, setMonth] = useState(() => { const d=new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
+        const [snack, setSnack] = useState({ open: false, message: '', severity: 'success' });
+
+        // Simulate availability: closed on Sun; block some random dates
+        const blocked = useMemo(() => {
+          const arr = new Set();
+          const base = new Date();
+          for (let i=3; i<=45; i+=11) {
+            const d = new Date(base.getFullYear(), base.getMonth(), base.getDate()+i);
+            arr.add(formatDateKey(d));
+          }
+          return arr;
+        }, []);
+
+        const reservations = useMemo(() => {
+          try { return JSON.parse(localStorage.getItem('yuta_reservations')||'[]'); } catch { return []; }
+        }, []);
+
+        const isDisabled = (d) => {
+          const today = new Date(); today.setHours(0,0,0,0);
+          const dd = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+          const key = formatDateKey(dd);
+          const isSunday = dd.getDay() === 0;
+          const inPast = dd < today;
+          // Disable if all three slots already booked on the date
+          const dayReservations = reservations.filter(r => r.date === key).map(r => r.time);
+          const fullyBooked = ['10:00','13:00','16:00'].every(t => dayReservations.includes(t));
+          return isSunday || inPast || blocked.has(key) || fullyBooked;
+        };
+
+        const daysInMonth = useMemo(() => {
+          const start = new Date(month.getFullYear(), month.getMonth(), 1);
+          const end = new Date(month.getFullYear(), month.getMonth()+1, 0);
+          const startWeekday = (start.getDay() + 6) % 7; // Mon=0 ... Sun=6
+          const total = end.getDate();
+          const cells = [];
+          for (let i=0; i<startWeekday; i++) cells.push(null);
+          for (let d=1; d<=total; d++) cells.push(new Date(month.getFullYear(), month.getMonth(), d));
+          return cells;
+        }, [month]);
+
+        const availableSlots = useMemo(() => {
+          if (!selected) return [];
+          const key = formatDateKey(selected);
+          const bookedTimes = reservations.filter(r => r.date === key).map(r => r.time);
+          return ['10:00','13:00','16:00'].filter(t => !bookedTimes.includes(t));
+        }, [selected, reservations]);
+
+        const reserve = () => {
+          if (!selected) { setSnack({ open: true, message: '日付を選択してください', severity: 'warning' }); return; }
+          if (!name || !phone) { setSnack({ open: true, message: 'お名前と電話番号は必須です', severity: 'warning' }); return; }
+          const key = formatDateKey(selected);
+          const data = { name, email, phone, note, date: key, time: slot };
+          const list = reservations.concat([data]);
+          localStorage.setItem('yuta_reservations', JSON.stringify(list));
+          setSnack({ open: true, message: `予約を受け付けました（${key} ${slot}）`, severity: 'success' });
+        };
+
+        return (
+          <Box id="booking" className="section" sx={{ py: { xs: 8, md: 10 }, backgroundColor: 'background.default' }}>
+            <Container maxWidth="lg">
+              <Stack gap={1} sx={{ mb: 3 }}>
+                <Typography variant="overline" color="primary">予約</Typography>
+                <Typography variant="h4">空き日程を確認してWeb予約</Typography>
+                <Typography color="text.secondary">日曜・混雑日はお休みです。空き枠はカレンダーからご確認ください。</Typography>
+              </Stack>
+
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <Paper variant="outlined" sx={{ p: 3 }}>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+                      <Button size="small" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth()-1, 1))}>前の月</Button>
+                      <Typography variant="h6">{month.getFullYear()}年 {month.getMonth()+1}月</Typography>
+                      <Button size="small" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth()+1, 1))}>次の月</Button>
+                    </Stack>
+                    <Box className="calendar-grid calendar-weekdays" sx={{ mb: 1, color: 'text.secondary' }}>
+                      {['月','火','水','木','金','土','日'].map((w) => (
+                        <Box key={w} sx={{ textAlign: 'center', fontSize: 12 }}>{w}</Box>
+                      ))}
+                    </Box>
+                    <Box className="calendar-grid">
+                      {daysInMonth.map((d, i) => {
+                        if (!d) return <Box key={i} />;
+                        const disabled = isDisabled(d);
+                        const selectedKey = selected ? formatDateKey(selected) : null;
+                        const isSelected = selectedKey === formatDateKey(d);
+                        return (
+                          <Button key={i}
+                            variant={isSelected ? 'contained' : 'outlined'}
+                            color={isSelected ? 'primary' : 'inherit'}
+                            disabled={disabled}
+                            onClick={() => setSelected(d)}
+                            sx={{ height: 48 }}
+                          >
+                            {d.getDate()}
+                          </Button>
+                        );
+                      })}
+                    </Box>
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                      灰色は予約不可日・満枠です。
+                    </Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Paper variant="outlined" sx={{ p: 3 }}>
+                    <Typography variant="subtitle1" gutterBottom>ご予約情報</Typography>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <TextField label="お名前" fullWidth required value={name} onChange={(e)=>setName(e.target.value)} />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField label="電話番号" fullWidth required value={phone} onChange={(e)=>setPhone(e.target.value)} />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField label="メールアドレス" fullWidth type="email" value={email} onChange={(e)=>setEmail(e.target.value)} />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField label="ご要望・車種など" fullWidth multiline minRows={3} value={note} onChange={(e)=>setNote(e.target.value)} />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Stack direction="row" gap={1} alignItems="center" flexWrap="wrap">
+                          <Chip label="10:00" color={slot==='10:00'?'primary':'default'} variant={slot==='10:00'?'filled':'outlined'} onClick={()=>setSlot('10:00')} />
+                          <Chip label="13:00" color={slot==='13:00'?'primary':'default'} variant={slot==='13:00'?'filled':'outlined'} onClick={()=>setSlot('13:00')} />
+                          <Chip label="16:00" color={slot==='16:00'?'primary':'default'} variant={slot==='16:00'?'filled':'outlined'} onClick={()=>setSlot('16:00')} />
+                        </Stack>
+                        <Typography variant="caption" color="text.secondary">ご希望の来店（または引取）時間</Typography>
+                      </Grid>
+                    </Grid>
+                    <Divider sx={{ my: 2 }} />
+                    <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} alignItems={{ xs: 'stretch', sm: 'center' }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="body2" color="text.secondary">選択日</Typography>
+                        <Typography variant="h6">{selected ? `${selected.getFullYear()}年${selected.getMonth()+1}月${selected.getDate()}日 ${slot}` : '未選択'}</Typography>
+                      </Box>
+                      <Button variant="contained" size="large" onClick={reserve} startIcon={<CalendarMonth />}>予約する</Button>
+                    </Stack>
+                  </Paper>
+                </Grid>
+              </Grid>
+
+              <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })}>
+                <Alert onClose={() => setSnack({ ...snack, open: false })} severity={snack.severity} sx={{ width: '100%' }}>{snack.message}</Alert>
+              </Snackbar>
+            </Container>
+          </Box>
+        );
+      }
+
+      function Contact() {
+        const [name, setName] = useState('');
+        const [email, setEmail] = useState('');
+        const [msg, setMsg] = useState('');
+        const [snack, setSnack] = useState({ open: false, message: '', severity: 'success' });
+
+        const submit = (e) => {
+          e.preventDefault();
+          if (!name || !email || !msg) {
+            setSnack({ open: true, message: '必須項目が未入力です', severity: 'warning' });
+            return;
+          }
+          // Demo: Save to localStorage as a placeholder for backend integration
+          const list = JSON.parse(localStorage.getItem('yuta_inquiries')||'[]');
+          list.push({ name, email, msg, at: new Date().toISOString() });
+          localStorage.setItem('yuta_inquiries', JSON.stringify(list));
+          setSnack({ open: true, message: '送信しました。折り返しご連絡します。', severity: 'success' });
+          setName(''); setEmail(''); setMsg('');
+        };
+
+        return (
+          <Box id="contact" className="section" sx={{ py: { xs: 8, md: 10 } }}>
+            <Container maxWidth="md">
+              <Stack gap={1} sx={{ mb: 3, textAlign: 'center' }}>
+                <Typography variant="overline" color="primary">問い合わせ</Typography>
+                <Typography variant="h4">お気軽にご相談ください</Typography>
+                <Typography color="text.secondary">費用の詳細、必要書類、引取エリアなど何でもどうぞ。</Typography>
+              </Stack>
+
+              <Paper variant="outlined" sx={{ p: 3 }}>
+                <Box component="form" onSubmit={submit}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <TextField label="お名前" fullWidth required value={name} onChange={(e)=>setName(e.target.value)} />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField label="メールアドレス" type="email" fullWidth required value={email} onChange={(e)=>setEmail(e.target.value)} />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField label="お問い合わせ内容" fullWidth required multiline minRows={5} value={msg} onChange={(e)=>setMsg(e.target.value)} />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Stack direction={{ xs: 'column', sm: 'row' }} gap={2}>
+                        <Button type="submit" variant="contained" startIcon={<Send />}>送信</Button>
+                        <Button href="#estimate" variant="outlined" startIcon={<Calculate />}>見積もりに戻る</Button>
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Paper>
+              <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })}>
+                <Alert onClose={() => setSnack({ ...snack, open: false })} severity={snack.severity} sx={{ width: '100%' }}>{snack.message}</Alert>
+              </Snackbar>
+            </Container>
+          </Box>
+        );
+      }
+
+      function Footer() {
+        return (
+          <Box component="footer" sx={{ py: 6, borderTop: '1px solid', borderColor: 'divider' }}>
+            <Container maxWidth="lg">
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12} md={8}>
+                  <Stack direction={{ xs: 'column', sm: 'row' }} gap={1} alignItems={{ xs: 'flex-start', sm: 'center' }}>
+                    <Motorcycle color="primary" />
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>車検代行のゆうた</Typography>
+                    <Typography color="text.secondary">代表：近藤友汰</Typography>
+                  </Stack>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Stack direction="row" gap={2} justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
+                    <Link href="#estimate" color="inherit">見積もり</Link>
+                    <Link href="#booking" color="inherit">予約</Link>
+                    <Link href="#contact" color="inherit">問い合わせ</Link>
+                  </Stack>
+                </Grid>
+              </Grid>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
+                表示価格は概算です。実費（法定費用・追加整備・部品代等）は別途発生します。詳しくはお問い合わせください。
+              </Typography>
+            </Container>
+          </Box>
+        );
+      }
+
+      function App() {
+        return (
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Header />
+            <Hero />
+            <Estimate />
+            <Booking />
+            <Contact />
+            <Footer />
+          </ThemeProvider>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+  </body>
+  </html>
+
